@@ -1,13 +1,15 @@
 import pygame
 import random
 from code.Background import Background
-from code.const import WIN_HEIGHT, C_WHITE, C_BLACK, WIN_WIDTH
+from code.const import WIN_HEIGHT, C_WHITE, C_BLACK
 from code.Player1 import Player1
 from code.Player2 import Player2
 from code.Projectile import Projectile
 from code.Enemy import Enemy
+from code.Enemy2 import Enemy2
+from code.Enemy3 import Enemy3
 
-class Level1:
+class Level3:
     def __init__(self, window, game, game_mode):
         self.game = game
         self.window = window
@@ -15,13 +17,12 @@ class Level1:
         self.game_mode = game_mode
         
         self.background_manager = Background(self.window_width, WIN_HEIGHT)
-        self.background_manager.add_layer('fundo1 1 camada.png', 0.2)
-        self.background_manager.add_layer('fundo 1 2 camada.png', 0.2)
-        self.background_manager.add_layer('fundo 1 3 camada.png', 0.5)
-        self.background_manager.add_layer('fundo 1 4 camada.png', 0.8)
-        self.background_manager.add_layer('fundo 1 5 camada.png', 1.2)
+        self.background_manager.add_layer('fundo 3 1 camada.png', 0.2)
+        self.background_manager.add_layer('fundo 3 3 camada.png', 0.5)
+        self.background_manager.add_layer('fundo 3 4 camada.png', 0.8)
+        self.background_manager.add_layer('fundo 3 5 camada.png', 1.2)
+        self.background_manager.add_layer('fundo 3 6 camada.png', 1.2)
 
-        # Cria jogadores baseado no modo de jogo
         self.player1 = Player1()
         self.player_group = pygame.sprite.Group(self.player1)
         if self.game_mode == '2P_COOP':
@@ -30,17 +31,20 @@ class Level1:
 
         self.projectile_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
-        self.enemy_defeat_goal = 20
+        self.enemy_defeat_goal = 60
         self.enemies_defeated = 0
-        self.enemy_spawn_interval = 1000
+        self.enemy_spawn_interval = 700
         self.last_enemy_spawn_time = 0
-        self.music_path = 'asset/menu musica.flac'
-        self.hud_font = pygame.font.Font(None, 20)
+        self.music_path = 'asset/fase 1 musica.mp3'
+        self.hud_font = pygame.font.Font(None, 24)
 
     def spawn_enemy(self):
         random_y = random.randint(50, WIN_HEIGHT - 50)
         spawn_x = self.window_width + 50
-        new_enemy = Enemy(x=spawn_x, y=random_y)
+        rand_num = random.random()
+        if rand_num < 0.3: new_enemy = Enemy3(x=spawn_x, y=random_y)
+        elif rand_num < 0.6: new_enemy = Enemy2(x=spawn_x, y=random_y)
+        else: new_enemy = Enemy(x=spawn_x, y=random_y)
         self.enemy_group.add(new_enemy)
 
     def handle_events(self, event_list):
@@ -49,7 +53,6 @@ class Level1:
                 if event.key == pygame.K_RETURN:
                     new_projectile = self.player1.shoot()
                     if new_projectile: self.projectile_group.add(new_projectile)
-                
                 if self.game_mode == '2P_COOP' and event.key == pygame.K_SPACE:
                     new_projectile = self.player2.shoot()
                     if new_projectile: self.projectile_group.add(new_projectile)
@@ -59,7 +62,7 @@ class Level1:
         self.projectile_group.update()
         self.enemy_group.update()
         self.background_manager.update()
-
+        
         collided_enemies = pygame.sprite.groupcollide(self.projectile_group, self.enemy_group, True, True)
         for enemy_list in collided_enemies.values():
             for enemy in enemy_list:
@@ -67,9 +70,8 @@ class Level1:
                 self.game.current_score += enemy.points
         
         if self.enemies_defeated >= self.enemy_defeat_goal:
-            return "NEXT_LEVEL"
+            return "VICTORY"
 
-        # Se qualquer jogador colidir, o jogo acaba
         if pygame.sprite.groupcollide(self.player_group, self.enemy_group, True, False):
             return "GAME_OVER"
         

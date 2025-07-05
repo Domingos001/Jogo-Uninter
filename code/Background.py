@@ -1,7 +1,6 @@
 import pygame
 
 class Background:
-    # CORREÇÃO: O __init__ agora recebe a altura da janela
     def __init__(self, window_width, window_height):
         self.window_width = window_width
         self.window_height = window_height # Guarda a altura
@@ -16,7 +15,7 @@ class Background:
             
             original_width, original_height = image.get_size()
             
-            # CORREÇÃO: Usa a variável de altura para redimensionar
+            
             new_height = self.window_height
             new_width = int(original_width * (new_height / original_height))
             image = pygame.transform.scale(image, (new_width, new_height))

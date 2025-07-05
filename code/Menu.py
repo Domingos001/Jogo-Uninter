@@ -13,8 +13,7 @@ class Menu:
         self.title_font = pygame.font.SysFont("Lucida Sans Typewriter", 70)
         self.option_font = pygame.font.SysFont("Lucida Sans Typewriter", 20)
         
-        # --- CORREÇÃO AQUI ---
-        # Forçando a tocar a música da fase 1 no menu.
+        
         self.music_path = 'asset/fase 1 musica.mp3'
 
     def draw(self):
