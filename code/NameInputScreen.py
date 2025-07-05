@@ -1,5 +1,6 @@
 import pygame
 from code.const import WIN_WIDTH, C_WHITE, C_YELLOW, C_BLACK
+from code.utils import resource_path
 
 class NameInputScreen:
     def __init__(self, window):
@@ -7,14 +8,20 @@ class NameInputScreen:
         self.title_font = pygame.font.Font(None, 48)
         self.input_font = pygame.font.Font(None, 40)
         self.current_input = ""
-        self.music_path = 'asset/menu musica.flac'
+        self.music_path = resource_path('asset/menu musica.flac')
         
-        self.background_image = pygame.image.load('asset/menu.png').convert()
+        try:
+            self.background_image = pygame.image.load(resource_path('asset/menu.png')).convert()
+        except pygame.error:
+            self.background_image = None
+            print("AVISO: Imagem de fundo da tela de nome não encontrada.")
         
         self.asking_for_player = 1
         self.player1_name = ""
+        self.game_mode = '1P'
 
     def start(self, game_mode):
+        """ Reinicia a tela para um novo input de nome. """
         self.game_mode = game_mode
         self.asking_for_player = 1
         self.current_input = ""
@@ -24,19 +31,33 @@ class NameInputScreen:
         for event in event_list:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and len(self.current_input) > 0:
-                    if self.game_mode in ['1P', '2P_COMP'] or self.asking_for_player == 2:
-                        if self.asking_for_player == 1: self.player1_name = self.current_input
+                    
+                    # --- CORREÇÃO DA LÓGICA AQUI ---
+                    # Este bloco finaliza a entrada de nomes se:
+                    # 1. O modo for de 1 jogador.
+                    # 2. Ou se já estivermos pedindo o nome do segundo jogador.
+                    if self.game_mode == '1P' or self.asking_for_player == 2:
+                        # Se ainda estamos no P1 (caso de 1P), guarda o nome.
+                        if self.asking_for_player == 1:
+                            self.player1_name = self.current_input
+                        
+                        # Define o nome do P2 (pode ser vazio se for modo 1P).
                         player2_name = self.current_input if self.asking_for_player == 2 else ""
+                        
+                        # Retorna os nomes e finaliza esta tela.
                         return {'p1_name': self.player1_name, 'p2_name': player2_name}
-                    else: # Modo 2P_COOP
+                    
+                    else: # Se for modo 2P (Coop ou Comp) e acabamos de pegar o nome do P1.
+                        # Guarda o nome do P1 e prepara para pedir o nome do P2.
                         self.player1_name = self.current_input
                         self.current_input = ""
                         self.asking_for_player = 2
+
                 elif event.key == pygame.K_BACKSPACE:
                     self.current_input = self.current_input[:-1]
                 else:
-                    # Limita o nome a 5 caracteres.
                     if len(self.current_input) < 5:
+                        # Adiciona o caractere digitado ao nome atual.
                         self.current_input += event.unicode
         return None
 

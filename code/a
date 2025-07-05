@@ -1,0 +1,6 @@
+        self.background_manager.add_layer('fundo 2 1 camada.png', 0.2)
+        self.background_manager.add_layer('fundo 3 3 camada.png', 0.5)
+        self.background_manager.add_layer('fundo 1 3 camada.png', 0.5)
+        self.background_manager.add_layer('fundo 3 4 camada.png', 0.8)
+        self.background_manager.add_layer('fundo 3 5 camada.png', 1.2)
+        self.background_manager.add_layer('fundo 3 6 camada.png', 1.2)
